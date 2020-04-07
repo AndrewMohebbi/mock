@@ -38,6 +38,7 @@ var georgeEvents = []structs.Event{
 var george = structs.Message{Name: "George", Events: georgeEvents}
 
 func main() {
+	fmt.Println("lrs started!")
 
 	//Start listening
 	http.HandleFunc("/", router)
