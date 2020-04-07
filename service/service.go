@@ -9,7 +9,7 @@ import (
 func main() {
 	fmt.Println("Service started!")
 
-	resp, err := http.Get("http://localhost:8000")
+	resp, err := http.Get("http://localhost:8000/sheila")
 	if err != nil {
 		fmt.Println("Error making request!")
 	}
