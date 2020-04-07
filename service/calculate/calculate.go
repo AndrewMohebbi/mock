@@ -1,24 +1,31 @@
 package calculate
 
 import (
+	"encoding/json"
 	"service/structs"
 )
 
-//Takes the body from lrs, which is a lrs/structs/message struct
-//returns a service/structs/message struct
-//Figures what courses there are and adds to the sturtc
-//Increments the completed seciton of the course struct by one for every section completed
-
 //Calculate takes an lrs message and returns a progress report
 func Calculate(body []byte) structs.Report {
-	report := structs.Report{
-		Name: "Sheila",
-		Courses: []structs.Course{
-			structs.Course{Name: "Matlab", Completed: 3},
-			structs.Course{Name: "Parallel Toolbox", Completed: 2},
-		},
+	//Populate lrs message struct
+	message := structs.Message{}
+	json.Unmarshal(body, &message)
+
+	//Populate progress map
+	courses := make(map[string]int)
+	for _, v := range message.Events {
+		name := v.Course
+		if _, ok := courses[name]; ok {
+			courses[name]++
+		} else {
+			courses[name] = 1
+		}
 	}
 
+	//Prepare report
+	report := structs.Report{
+		Name:    message.Name,
+		Courses: courses,
+	}
 	return report
-
 }
