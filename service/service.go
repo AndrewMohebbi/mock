@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -20,7 +21,10 @@ func router(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		send(w, r)
 	default:
-		fmt.Println("Wrong method in request!")
+		marshalled, _ := json.Marshal("Method not supported!")
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(405)
+		w.Write(marshalled)
 	}
 }
 
@@ -40,7 +44,6 @@ func send(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(string(body))
 
-	//marshalled, _ := json.Marshal(andy)
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(200)
 	w.Write(body)

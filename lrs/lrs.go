@@ -7,7 +7,8 @@ import (
 	"net/http"
 )
 
-//Hard coded data to load
+//Hard coded data
+////////////////////////////////////////////////////////////////////////
 var andyEvents = []structs.Event{
 	structs.Event{
 		Course: "Matlab", Section: 1, Completed: true,
@@ -37,10 +38,11 @@ var georgeEvents = []structs.Event{
 }
 var george = structs.Message{Name: "George", Events: georgeEvents}
 
+////////////////////////////////////////////////////////////////////////
+
 func main() {
 	fmt.Println("lrs started!")
 
-	//Start listening
 	http.HandleFunc("/", router)
 	http.ListenAndServe(":8000", nil)
 
@@ -51,14 +53,14 @@ func router(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		send(w, r)
 	default:
-		fmt.Println("Wrong method in request!")
+		marshalled, _ := json.Marshal("Method not supported!")
+		w.Header().Add("Content-Type", "application/json")
+		w.WriteHeader(405)
+		w.Write(marshalled)
 	}
 }
 
 func send(w http.ResponseWriter, r *http.Request) {
-	//Method: get by name
-	//its a get request, it requires a name, and returns all events associated wiht that name
-
 	switch r.URL.Path[1:] {
 	case "andy":
 		marshalled, _ := json.Marshal(andy)
@@ -75,9 +77,6 @@ func send(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(404)
 		w.Write(marshalled)
-
 	}
-
 	return
-
 }
