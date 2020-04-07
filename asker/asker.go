@@ -10,7 +10,6 @@ import (
 var nameFlag = flag.String("name", "", "Which name do you want progress for?")
 
 func main() {
-	//Parse the name flag
 	flag.Parse()
 
 	//Make the request
