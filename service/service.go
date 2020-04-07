@@ -1,17 +1,15 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"service/calculate"
+	"service/utils"
 )
 
 func main() {
-
 	fmt.Println("Service started!")
 
-	//Start listening
 	http.HandleFunc("/", router)
 	http.ListenAndServe(":8100", nil)
 }
@@ -19,35 +17,14 @@ func main() {
 func router(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		send(w, r)
+		get(w, r)
 	default:
-		marshalled, _ := json.Marshal("Method not supported!")
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(405)
-		w.Write(marshalled)
+		utils.Write(w, 405, "Method not supported!")
 	}
 }
 
-func send(w http.ResponseWriter, r *http.Request) {
-
-	resp, err := http.Get("http://localhost:8000/" + r.URL.Path[1:])
-	if err != nil {
-		fmt.Println("Error making request!")
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("Error reading body!")
-	}
-
-	fmt.Println(string(body))
-
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(200)
-	w.Write(body)
-
-	return
-
+func get(w http.ResponseWriter, r *http.Request) {
+	body := utils.LrsGet(r)
+	report := calculate.Calculate(body)
+	utils.Write(w, 200, report)
 }
